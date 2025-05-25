@@ -80,6 +80,8 @@ public:
     void mediaKeyRelease(uint32_t mediaKey);
 
     Signal<KeyboardOutputReport> onLED;
+    void setKeyReport(KeyboardInputReport *InputReport);
+    void setMediaKeyReport(KeyboardMediaInputReport *MediaInputReport);
 
     void sendKeyReport(bool defer = false);
     void sendMediaKeyReport(bool defer = false);

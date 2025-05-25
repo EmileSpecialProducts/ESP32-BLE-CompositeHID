@@ -219,6 +219,26 @@ void KeyboardDevice::sendKeyReportImpl()
     input->notify();
 }
 
+void KeyboardDevice::setKeyReport(KeyboardInputReport *InputReport)
+{
+    memcpy(&_inputReport, InputReport, sizeof(_inputReport));
+    if (_config.getAutoReport())
+    {
+        sendKeyReport();
+     }
+}
+
+void KeyboardDevice::setMediaKeyReport(KeyboardMediaInputReport *MediaInputReport)
+{
+    memcpy( &_mediaKeyInputReport,MediaInputReport, sizeof(_mediaKeyInputReport));
+    Serial.printf("Set Media %04x %d\n",_mediaKeyInputReport.keys , _config.getAutoReport());
+
+    if (_config.getAutoReport())
+    {
+        sendMediaKeyReport();
+    }
+}
+
 void KeyboardDevice::sendMediaKeyReport(bool defer)
 {
     if(defer || _config.getAutoDefer()){
