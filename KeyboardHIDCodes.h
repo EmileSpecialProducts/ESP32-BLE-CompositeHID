@@ -237,7 +237,7 @@
 
 #endif // _TUSB_HID_H_
 #ifndef CONFIG_TINYUSB_HID_ENABLED
-// from USBHIDKeyboard.h
+// from https://github.com/espressif/arduino-esp32/blob/master/libraries/USB/src/USBHIDKeyboard.h
 #define KEY_LEFT_CTRL   0x80
 #define KEY_LEFT_SHIFT  0x81
 #define KEY_LEFT_ALT    0x82
