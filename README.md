@@ -9,7 +9,7 @@ As i was not able to Wait and had to resolve the folowing issues:
 [USBHID and BLE](https://github.com/Mystfit/ESP32-BLE-CompositeHID/issues/40)
 
 [Send RawKeyreports and MediaKeyReport](https://github.com/Mystfit/ESP32-BLE-CompositeHID/issues/39)
-
+[reconnection fix!](https://github.com/Mystfit/ESP32-BLE-CompositeHID/issues/48#issuecomment-3115087849)
 Forked from ESP32-BLE-Gamepad by lemmingDev to provide support support for composite human interface devices.
 
 This library will let your ESP32 microcontroller behave as a bluetooth mouse, keyboard, gamepad (XInput or generic), or a combination of any of these devices.
