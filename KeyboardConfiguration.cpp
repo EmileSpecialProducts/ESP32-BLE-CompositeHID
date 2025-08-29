@@ -5,13 +5,15 @@
 
 KeyboardConfiguration::KeyboardConfiguration() :
     BaseCompositeDeviceConfiguration(KEYBOARD_REPORT_ID),
-    _useMediaKeys(false)
+    _useMediaKeys(false),
+    _useSystemControl(false)
 {
 }
 
 KeyboardConfiguration::KeyboardConfiguration(uint8_t reportId) :
     BaseCompositeDeviceConfiguration(reportId),
-    _useMediaKeys(false)
+    _useMediaKeys(false),
+    _useSystemControl(false)
 {
 }
 
@@ -39,6 +41,15 @@ size_t KeyboardConfiguration::makeDeviceReport(uint8_t* buffer, size_t bufferSiz
         }
     }
     
+    if(_useSystemControl){
+        size_t systemControlHidDescriptorSize = sizeof(_systemControlHIDReportDescriptor);
+        if(hidDescriptorSize + systemControlHidDescriptorSize < bufferSize){
+            memcpy(buffer + hidDescriptorSize, _systemControlHIDReportDescriptor, systemControlHidDescriptorSize);
+            hidDescriptorSize += systemControlHidDescriptorSize;
+        } else {
+            return -1;
+        }
+    }
     return hidDescriptorSize;
 }
 
@@ -47,7 +58,16 @@ bool KeyboardConfiguration::getUseMediaKeys() const
     return _useMediaKeys;
 }
 
+bool KeyboardConfiguration::getUseSystemControl() const
+{
+    return _useSystemControl;
+}
+
 void KeyboardConfiguration::setUseMediaKeys(bool value)
 {
     _useMediaKeys = value;
+}
+void KeyboardConfiguration::setUseSystemControl(bool value)
+{
+    _useSystemControl = value;
 }

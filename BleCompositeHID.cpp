@@ -280,7 +280,7 @@ void BleCompositeHID::taskServer(void *pvParameter)
     // Start BLE advertisement
     NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
     pAdvertising->setAppearance(hidType);
-	pAdvertising->setName(BleCompositeHIDInstance->deviceName);
+	pAdvertising->setName(BleCompositeHIDInstance->deviceName); //https://github.com/Mystfit/ESP32-BLE-CompositeHID/issues/54
     pAdvertising->addServiceUUID(BleCompositeHIDInstance->_hid->getHidService()->getUUID());
     pAdvertising->start();
     ESP_LOGD(LOG_TAG, "Advertising started!");

@@ -13,8 +13,11 @@ public:
 
     bool getUseMediaKeys() const;
     void setUseMediaKeys(bool value);
+    bool getUseSystemControl() const;
+    void setUseSystemControl(bool value);
 private:
-    bool _useMediaKeys;
+    bool _useMediaKeys = false;
+    bool _useSystemControl = false;
 };
 
 #endif

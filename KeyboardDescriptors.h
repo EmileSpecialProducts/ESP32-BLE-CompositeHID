@@ -5,6 +5,7 @@
 
 #define KEYBOARD_REPORT_ID 0x40
 #define MEDIA_KEYS_REPORT_ID 0x43
+#define SYSTEMCONTROL_REPORT_ID 0x05
 
 static const uint8_t _keyboardHIDReportDescriptor[] = {
   // Input
@@ -83,5 +84,22 @@ static const uint8_t _mediakeysHIDReportDescriptor[] = {
   END_COLLECTION(0)                                 // END_COLLECTION
 };
 
-
+static const uint8_t _systemControlHIDReportDescriptor[] = {
+  USAGE_PAGE(1),      0x01,                         // USAGE_PAGE (Generic Desktop Page (0x01))
+  USAGE(1),           0x80,                         // USAGE (System Control)
+  COLLECTION(1),      0x01,                         // COLLECTION (Application)
+  REPORT_ID(1),       SYSTEMCONTROL_REPORT_ID,      //   REPORT_ID (5)
+  LOGICAL_MINIMUM(1), 0x01,                         //   LOGICAL_MINIMUM (0)
+  LOGICAL_MAXIMUM(1), 0x03,                         //   LOGICAL_MAXIMUM (1)
+  REPORT_COUNT(1),    0x01,                         //   REPORT_COUNT (24)
+  REPORT_SIZE(1),     0x02,                         //   REPORT_SIZE (2)
+  USAGE(1),           0x81,                         //   USAGE (System Power Down )
+  USAGE(1),           0x82,                         //   USAGE (System Sleep )
+  USAGE(1),           0x83,                         //   USAGE (System Wake Up )   
+  HIDINPUT(1),        0x00,                         //   INPUT ()
+  REPORT_COUNT(1),    0x01,                         //   REPORT_COUNT (1)  
+  REPORT_SIZE(1),     0x06,                         //   OUTPUT ()
+  HIDINPUT(1),        0x01,                         //   INPUT ()  
+  END_COLLECTION(0)                                 // END_COLLECTION
+};
 #endif // KEYBOARDDESCRIPTORS_H

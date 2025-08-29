@@ -18,6 +18,10 @@ struct KeyboardMediaInputReport {
     uint32_t keys;
 };
 
+struct KeyboardSystemControlInputReport {
+    uint8_t keys;
+};  
+
 struct KeyboardOutputReport {
     bool numLockActive;
     bool capsLockActive;
@@ -56,10 +60,12 @@ private:
     KeyboardConfiguration _config;
     NimBLECharacteristic* _input;
     NimBLECharacteristic* _mediaInput;
+    NimBLECharacteristic* _SystemControlInput;
     NimBLECharacteristic* _output;
 
     KeyboardInputReport _inputReport;
     KeyboardMediaInputReport _mediaKeyInputReport;
+    KeyboardSystemControlInputReport _SystemControlInputReport;
     KeyboardCallbacks* _callbacks;
 
 public:
@@ -78,17 +84,22 @@ public:
     void modifierKeyRelease(uint8_t modifier);
     void mediaKeyPress(uint32_t mediaKey);
     void mediaKeyRelease(uint32_t mediaKey);
+    void SystemControlRelease();
+    void SystemControlPress(uint8_t SystemControlKey);
 
     Signal<KeyboardOutputReport> onLED;
     void setKeyReport(KeyboardInputReport *InputReport);
     void setMediaKeyReport(KeyboardMediaInputReport *MediaInputReport);
+    void setSystemControlReport(KeyboardSystemControlInputReport *SystemControlInputReport);
 
     void sendKeyReport(bool defer = false);
     void sendMediaKeyReport(bool defer = false);
+    void sendSystemControlReport(bool defer = false);
 
 private:
     void sendKeyReportImpl();
     void sendMediaKeyReportImpl();
+    void sendSystemControlReportImpl();
 
     // Threading
     std::mutex _mutex;

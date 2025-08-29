@@ -67,6 +67,7 @@ void KeyboardDevice::init(NimBLEHIDDevice* hid)
 {
     _input = hid->getInputReport(_config.getReportId());
     _mediaInput = hid->getInputReport(MEDIA_KEYS_REPORT_ID);
+    _SystemControlInput = hid->getInputReport(SYSTEMCONTROL_REPORT_ID);
     _output = hid->getOutputReport(_config.getReportId());
     _callbacks = new KeyboardCallbacks(this);
     _output->setCallbacks(_callbacks);
@@ -86,7 +87,7 @@ void KeyboardDevice::resetKeys()
     _inputReport.reserved = 0x00;
     memset(&_inputReport.keys, KEY_NONE, sizeof(_inputReport.keys));
     _mediaKeyInputReport.keys = 0x000000;
-
+    _SystemControlInputReport.keys = 0x00;
 }
 
 void KeyboardDevice::modifierKeyPress(uint8_t modifier)
@@ -112,32 +113,6 @@ void KeyboardDevice::modifierKeyRelease(uint8_t modifier)
     if (_config.getAutoReport())
     {
         sendKeyReport();
-    }
-}
-
-void KeyboardDevice::mediaKeyPress(uint32_t mediaKey)
-{
-    {
-        std::lock_guard<std::mutex> lock(_mutex);
-        _mediaKeyInputReport.keys |= mediaKey;
-    }
-
-    if (_config.getAutoReport())
-    {
-        sendMediaKeyReport();
-    }
-}
-
-void KeyboardDevice::mediaKeyRelease(uint32_t mediaKey)
-{
-    {
-        std::lock_guard<std::mutex> lock(_mutex);
-        _mediaKeyInputReport.keys ^= mediaKey;
-    }
-
-    if (_config.getAutoReport())
-    {
-        sendMediaKeyReport();
     }
 }
 
@@ -228,6 +203,35 @@ void KeyboardDevice::setKeyReport(KeyboardInputReport *InputReport)
      }
 }
 
+
+//#######################################################################################
+// Media key support
+//#######################################################################################
+void KeyboardDevice::mediaKeyPress(uint32_t mediaKey)
+{
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        _mediaKeyInputReport.keys |= mediaKey;
+    }
+
+    if (_config.getAutoReport())
+    {
+        sendMediaKeyReport();
+    }
+}
+
+void KeyboardDevice::mediaKeyRelease(uint32_t mediaKey)
+{
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        _mediaKeyInputReport.keys ^= mediaKey;
+    }
+    if (_config.getAutoReport())
+    {
+        sendMediaKeyReport();
+    }
+}
+
 void KeyboardDevice::setMediaKeyReport(KeyboardMediaInputReport *MediaInputReport)
 {
     memcpy( &_mediaKeyInputReport,MediaInputReport, sizeof(_mediaKeyInputReport));
@@ -246,7 +250,6 @@ void KeyboardDevice::sendMediaKeyReport(bool defer)
     }
 }
 
-
 void KeyboardDevice::sendMediaKeyReportImpl()
 {
    auto input = getInput();
@@ -260,7 +263,6 @@ void KeyboardDevice::sendMediaKeyReportImpl()
 
     uint8_t m[3];
     memset(&m, 0, sizeof(m));
-
     // Copy key input report into buffer
     {
         std::lock_guard<std::mutex> lock(_mutex);
@@ -271,4 +273,71 @@ void KeyboardDevice::sendMediaKeyReportImpl()
         _mediaInput->setValue((uint8_t*)&m, sizeof(m));
     }
     _mediaInput->notify();
+}
+
+//#######################################################################################
+// SystemControl key support
+//#######################################################################################
+void KeyboardDevice::SystemControlPress(uint8_t SystemControlKey)
+{
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        _SystemControlInputReport.keys = SystemControlKey;
+    }
+    if (_config.getAutoReport())
+    {
+        sendSystemControlReport();
+    }
+}
+
+void KeyboardDevice::SystemControlRelease()
+{
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        _SystemControlInputReport.keys = 0;
+    }
+    if (_config.getAutoReport())
+    {
+        sendSystemControlReport();
+    }
+}
+
+void KeyboardDevice::setSystemControlReport(KeyboardSystemControlInputReport *SystemControlInputReport)
+{
+    memcpy( &_SystemControlInputReport,SystemControlInputReport, sizeof(_SystemControlInputReport));
+    if (_config.getAutoReport())
+    {
+        sendSystemControlReport();
+    }
+}
+
+void KeyboardDevice::sendSystemControlReport(bool defer)
+{
+    if(defer || _config.getAutoDefer()){
+        queueDeferredReport(std::bind(&KeyboardDevice::sendSystemControlReportImpl, this));
+    } else {
+        sendSystemControlReportImpl();
+    }
+}
+
+void KeyboardDevice::sendSystemControlReportImpl()
+{
+   auto input = getInput();
+    auto parentDevice = this->getParent();
+
+    if (!input || !parentDevice)
+        return;
+
+    if(!parentDevice->isConnected())
+        return;
+
+    uint8_t m[1];
+    memset(&m, 0, sizeof(m));
+    // Copy key input report into buffer
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        m[0] = _SystemControlInputReport.keys & 0xFF;
+        _SystemControlInput->setValue((uint8_t*)&m, sizeof(m));
+    }
+    _SystemControlInput->notify();
 }
