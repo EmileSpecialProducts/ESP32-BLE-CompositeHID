@@ -1,14 +1,14 @@
 #include <NimBLEDevice.h>
 #include <NimBLEUtils.h>
 #include <NimBLEServer.h>
+
 #include "NimBLEHIDDevice.h"
 #include "HIDTypes.h"
 #include "HIDKeyboardTypes.h"
-//#include <driver/adc.h>
 #include "sdkconfig.h"
-
 #include "BleCompositeHID.h"
 #include "BleConnectionStatus.h"
+#include "ArduinoDefines.h"
 
 #include <sstream>
 #include <iostream>
@@ -182,10 +182,13 @@ void BleCompositeHID::taskServer(void *pvParameter)
     //uint8_t newMACAddress[] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF - 0x02};
     //esp_base_mac_addr_set(&newMACAddress[0]); // Set new MAC address 
     NimBLEDevice::init(BleCompositeHIDInstance->deviceName);
+    //Set the 2M PHY as default for tx and rx. Should be safe to add since if there's no compatibility or unrealibility the bt adapter on the host will re-negotiate this.
+	NimBLEDevice::setDefaultPhy(BLE_GAP_LE_PHY_2M_MASK, BLE_GAP_LE_PHY_2M_MASK);
     NimBLEServer *pServer = NimBLEDevice::createServer();
     pServer->setCallbacks(BleCompositeHIDInstance->_connectionStatus);
 	pServer->advertiseOnDisconnect(true); // https://github.com/Mystfit/ESP32-BLE-CompositeHID/issues/48#issuecomment-3115087849
     BleCompositeHIDInstance->_hid = new NimBLEHIDDevice(pServer);
+    BleCompositeHIDInstance->_connectionStatus->setConfiguration(&BleCompositeHIDInstance->_configuration);
     
     // Setup the HID descriptor buffers
     size_t totalBufferSize = 2048;
@@ -207,9 +210,6 @@ void BleCompositeHID::taskServer(void *pvParameter)
             return;
         } else if(reportSize == 0){
             ESP_LOGE(LOG_TAG, "Device report size is 0");
-            return;
-        } else if(reportSize < 0){
-            ESP_LOGE(LOG_TAG, "Error creating report for device %s", config->getDeviceName());
             return;
         } else {
             ESP_LOGD(LOG_TAG, "Created device %s with report size %d", config->getDeviceName(), reportSize);
@@ -273,8 +273,7 @@ void BleCompositeHID::taskServer(void *pvParameter)
     // NimBLEDevice::setSecurityAuth(BLE_SM_PAIR_AUTHREQ_BOND);  //BLE_SM_PAIR_AUTHREQ_SC
 	NimBLEDevice::setSecurityAuth(true, false, false); // enable bonding, no MITM, no SC
 
-    // Start BLE server
-    BleCompositeHIDInstance->_hid->startServices();
+    // Call onStarted on derived class instances
     BleCompositeHIDInstance->onStarted(pServer);
 
     // Start BLE advertisement

@@ -10,10 +10,13 @@
 #include "NimBLECharacteristic.h"
 #include "NimBLEConnInfo.h"
 
+class BLEHostConfiguration; // Forward declaration
+
 class BleConnectionStatus : public NimBLEServerCallbacks
 {
 public:
     BleConnectionStatus(void);
+    void setConfiguration(const BLEHostConfiguration* config);
     void onConnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo) override;
     void onDisconnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo, int reason) override;
     //NimBLECharacteristic *inputGamepad;
@@ -21,6 +24,7 @@ public:
     void onAuthenticationComplete(NimBLEConnInfo& connInfo) override;
 private:
     bool connected = false;
+    const BLEHostConfiguration* _configuration;
 };
 
 #endif // CONFIG_BT_NIMBLE_ROLE_PERIPHERAL

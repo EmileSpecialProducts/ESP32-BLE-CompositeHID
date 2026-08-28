@@ -17,6 +17,10 @@ private:
     uint16_t _pid;
 	uint16_t _guidVersion;
     uint16_t _hid_type;
+    uint16_t _minConnectionInterval;
+    uint16_t _maxConnectionInterval;
+    uint16_t _slaveLatency;
+    uint16_t _supervisionTimeout;
     std::string _modelNumber;
     std::string _softwareRevision;
     std::string _serialNumber;
@@ -48,6 +52,15 @@ public:
     void setSerialNumber(const char *value);
     void setFirmwareRevision(const char *value);
     void setHardwareRevision(const char *value);
+
+    void setMinConnectionInterval(uint16_t value);
+    uint16_t getMinConnectionInterval() const;
+    void setMaxConnectionInterval(uint16_t value);
+    uint16_t getMaxConnectionInterval() const;
+    void setSlaveLatency(uint16_t value);
+    uint16_t getSlaveLatency() const;
+    void setSupervisionTimeout(uint16_t value);
+    uint16_t getSupervisionTimeout() const;
 
     // Set how quickly the auto-send should send queued reports. 
     // A value of 0 will send reports as soon as they are queued.

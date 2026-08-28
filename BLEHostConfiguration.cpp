@@ -7,6 +7,10 @@ BLEHostConfiguration::BLEHostConfiguration() :
     _pid(0xbbab),
     _guidVersion(0x0110),
     _hid_type(GENERIC_HID),
+    _minConnectionInterval(6),
+    _maxConnectionInterval(7),
+    _slaveLatency(0),
+    _supervisionTimeout(600),
     _modelNumber("1.0.0"),
     _softwareRevision("1.0.0"),
     _serialNumber("0123456789"),
@@ -48,3 +52,15 @@ uint32_t BLEHostConfiguration::getQueueSendRate() const { return _deferSendRate;
 
 void BLEHostConfiguration::setQueuedSending(bool value) { _threadedAutoSend = value; }
 bool BLEHostConfiguration::getQueuedSending() const { return _threadedAutoSend; }
+
+void BLEHostConfiguration::setMinConnectionInterval(uint16_t value) { _minConnectionInterval = value; }
+uint16_t BLEHostConfiguration::getMinConnectionInterval() const { return _minConnectionInterval; }
+
+void BLEHostConfiguration::setMaxConnectionInterval(uint16_t value) { _maxConnectionInterval = value; }
+uint16_t BLEHostConfiguration::getMaxConnectionInterval() const { return _maxConnectionInterval; }
+
+void BLEHostConfiguration::setSlaveLatency(uint16_t value) { _slaveLatency = value; }
+uint16_t BLEHostConfiguration::getSlaveLatency() const { return _slaveLatency; }
+
+void BLEHostConfiguration::setSupervisionTimeout(uint16_t value) { _supervisionTimeout = value; }
+uint16_t BLEHostConfiguration::getSupervisionTimeout() const { return _supervisionTimeout; }
